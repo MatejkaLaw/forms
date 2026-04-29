@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Website Button Generator | Matejka Law Tenant Forms</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink:        #1a1f2e;
+    --ink-soft:   #3a4256;
+    --paper:      #faf8f4;
+    --paper-2:    #f3efe7;
+    --rule:       #d8d2c4;
+    --accent:     #8b3a3a;
+    --gold:       #b08d3f;
+    --ok:         #2d6a4f;
+    --shadow:     0 1px 2px rgba(26,31,46,.04), 0 8px 24px rgba(26,31,46,.06);
+    --serif:      'Fraunces', Georgia, serif;
+    --sans:       'Manrope', -apple-system, sans-serif;
+    --mono:       'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(176,141,63,.05) 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(139,58,58,.04) 0%, transparent 40%);
+    background-attachment: fixed;
+  }
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 36px 24px 80px;
+  }
+  header.masthead {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 24px;
+    margin-bottom: 28px;
+  }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(30px, 4.5vw, 40px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    margin: 0 0 8px;
+  }
+  h1 em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .deck { color: var(--ink-soft); max-width: 620px; margin: 6px 0 0; font-size: 15px; }
+
+  section.card {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 28px 32px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow);
+  }
+  .section-num {
+    display: inline-block;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 22px;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .section-sub {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: 0 0 22px;
+    font-style: italic;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+    margin-top: 16px;
+  }
+  label:first-of-type { margin-top: 0; }
+  label .req { color: var(--accent); }
+  label .opt { color: var(--ink-soft); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11px; }
+
+  input[type="text"], input[type="email"], input[type="tel"], input[type="url"], select {
+    width: 100%;
+    padding: 10px 13px;
+    font-family: var(--sans);
+    font-size: 14.5px;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(139,58,58,.1);
+  }
+  .help {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    font-style: italic;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 640px) {
+    .row { grid-template-columns: 1fr; }
+    section.card { padding: 22px 20px; }
+    .wrap { padding: 24px 16px 60px; }
+  }
+
+  /* Code block */
+  .code-block {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 6px;
+    padding: 22px 24px;
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+    user-select: all;
+    position: relative;
+  }
+  .code-block .placeholder {
+    color: rgba(250,248,244,.4);
+    font-family: var(--sans);
+    font-style: italic;
+    white-space: normal;
+  }
+
+  .button-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  button {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid var(--rule);
+    background: #fff;
+    color: var(--ink);
+    padding: 10px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  button:hover { background: var(--paper-2); border-color: var(--ink-soft); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.primary:hover { background: #6f2d2d; }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  button.success-flash { background: var(--ok) !important; border-color: var(--ok) !important; color: #fff !important; }
+
+  /* Live preview */
+  .preview-area {
+    background: var(--paper-2);
+    border: 1px dashed var(--rule);
+    padding: 32px 24px;
+    border-radius: 6px;
+    margin-top: 18px;
+    text-align: center;
+  }
+  .preview-area .preview-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+
+  /* Style variants for the actual button */
+  .ml-button {
+    display: inline-block;
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 4px;
+    transition: all .15s;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+  .ml-button.style-solid {
+    background: #8b3a3a;
+    color: #fff;
+  }
+  .ml-button.style-solid:hover { background: #6f2d2d; }
+  .ml-button.style-outline {
+    background: transparent;
+    color: #8b3a3a;
+    border-color: #8b3a3a;
+  }
+  .ml-button.style-outline:hover { background: #8b3a3a; color: #fff; }
+  .ml-button.style-minimal {
+    background: #1a1f2e;
+    color: #fff;
+  }
+  .ml-button.style-minimal:hover { background: #3a4256; }
+  .ml-button.style-warm {
+    background: #b08d3f;
+    color: #fff;
+  }
+  .ml-button.style-warm:hover { background: #8d7032; }
+
+  .style-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .style-option {
+    border: 2px solid var(--rule);
+    border-radius: 6px;
+    padding: 18px;
+    cursor: pointer;
+    text-align: center;
+    transition: all .15s;
+    background: #fff;
+  }
+  .style-option:hover { border-color: var(--ink-soft); }
+  .style-option.selected {
+    border-color: var(--accent);
+    background: #fdf2f2;
+  }
+  .style-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .style-option .name {
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin-top: 12px;
+    display: block;
+  }
+
+  .instructions {
+    background: #fdf6e3;
+    border-left: 4px solid var(--gold);
+    padding: 16px 20px;
+    border-radius: 4px;
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+  .instructions h3 {
+    font-family: var(--serif);
+    margin: 0 0 8px;
+    font-size: 17px;
+    color: #92400e;
+  }
+  .instructions p { margin: 0; color: var(--ink-soft); }
+  .instructions ol { margin: 8px 0 0; padding-left: 22px; color: var(--ink-soft); }
+  .instructions li { margin-bottom: 4px; }
+
+  footer.foot {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  footer.foot strong { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">Matejka Law — Tenant Forms Toolkit</div>
+    <h1>Website Button <em>Generator</em></h1>
+    <p class="deck">Generate a copy-paste HTML button your client can place on their website. When tenants click it, they'll be taken to a payment arrangement request form pre-set with the client's company information.</p>
+  </header>
+
+  <div class="instructions">
+    <h3>How to use this</h3>
+    <ol>
+      <li>Fill in your client's company info below.</li>
+      <li>Choose a button style.</li>
+      <li>Copy the generated code.</li>
+      <li>Send it to your client to give to their web developer.</li>
+    </ol>
+  </div>
+
+  <!-- ===== SECTION I — Client Info ===== -->
+  <section class="card">
+    <div class="section-num">Section I</div>
+    <h2>Client Information</h2>
+    <p class="section-sub">The property management company this button is for.</p>
+
+    <label>Company Name <span class="req">*</span></label>
+    <input type="text" id="company" placeholder="e.g., Smith Realty Group">
+
+    <label>Submission Email <span class="req">*</span></label>
+    <input type="email" id="email" placeholder="manager@smithrealty.com">
+    <div class="help">Where tenant submissions will be routed.</div>
+
+    <div class="row">
+      <div>
+        <label>CC Email <span class="opt">(optional)</span></label>
+        <input type="email" id="cc" placeholder="copy@smithrealty.com">
+      </div>
+      <div>
+        <label>Office Phone <span class="opt">(optional)</span></label>
+        <input type="tel" id="phone" placeholder="(843) 555-0000">
+      </div>
+    </div>
+
+    <label>Hosted Form URL <span class="req">*</span></label>
+    <input type="url" id="baseUrl" placeholder="https://matejkalaw.github.io/forms/payment-arrangement-form.html" value="https://matejkalaw.github.io/forms/payment-arrangement-form.html">
+    <div class="help">The URL where the tenant form is hosted. Saved automatically.</div>
+  </section>
+
+  <!-- ===== SECTION II — Button Style ===== -->
+  <section class="card">
+    <div class="section-num">Section II</div>
+    <h2>Button Style</h2>
+    <p class="section-sub">Pick the style that best matches your client's website.</p>
+
+    <label>Button Text</label>
+    <input type="text" id="buttonText" value="Request a Payment Arrangement" placeholder="Request a Payment Arrangement">
+
+    <label>Button Style</label>
+    <div class="style-grid">
+      <label class="style-option selected" data-style="solid">
+        <input type="radio" name="style" value="solid" checked>
+        <span class="ml-button style-solid" style="pointer-events: none;">Request a Payment Arrangement</span>
+        <span class="name">Solid (Oxblood)</span>
+      </label>
+      <label class="style-option" data-style="outline">
+        <input type="radio" name="style" value="outline">
+        <span class="ml-button style-outline" style="pointer-events: none;">Request a Payment Arrangement</span>
+        <span class="name">Outline</span>
+      </label>
+      <label class="style-option" data-style="minimal">
+        <input type="radio" name="style" value="minimal">
+        <span class="ml-button style-minimal" style="pointer-events: none;">Request a Payment Arrangement</span>
+        <span class="name">Solid (Ink)</span>
+      </label>
+      <label class="style-option" data-style="warm">
+        <input type="radio" name="style" value="warm">
+        <span class="ml-button style-warm" style="pointer-events: none;">Request a Payment Arrangement</span>
+        <span class="name">Warm Gold</span>
+      </label>
+    </div>
+  </section>
+
+  <!-- ===== SECTION III — Live Preview ===== -->
+  <section class="card">
+    <div class="section-num">Section III</div>
+    <h2>Live Preview</h2>
+    <p class="section-sub">This is what the button will look like on your client's website.</p>
+
+    <div class="preview-area">
+      <div class="preview-label">Preview</div>
+      <div id="previewContainer">
+        <!-- Live button injected here -->
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="testButton" disabled>Test in New Tab</button>
+    </div>
+  </section>
+
+  <!-- ===== SECTION IV — Generated Code ===== -->
+  <section class="card">
+    <div class="section-num">Section IV</div>
+    <h2>Code to Send Your Client</h2>
+    <p class="section-sub">Copy this and send it to your client. They (or their web developer) will paste it into their website.</p>
+
+    <div class="code-block" id="codeOutput">
+      <span class="placeholder">Fill in client info above to generate code…</span>
+    </div>
+
+    <div class="button-row">
+      <button class="primary" id="copyCodeBtn" disabled>Copy Code</button>
+      <button id="copyInstructionsBtn" disabled>Copy Code + Instructions for Client</button>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p><strong>Provided by Matejka Law LLC.</strong> For use by clients of Matejka Law's property management services only.</p>
+  </footer>
+
+</div>
+
+<script>
+  const CONFIG_KEY = 'paymentForm_buttonGen';
+
+  const els = {
+    company:        document.getElementById('company'),
+    email:          document.getElementById('email'),
+    cc:             document.getElementById('cc'),
+    phone:          document.getElementById('phone'),
+    baseUrl:        document.getElementById('baseUrl'),
+    buttonText:     document.getElementById('buttonText'),
+    previewContainer: document.getElementById('previewContainer'),
+    codeOutput:     document.getElementById('codeOutput'),
+    copyCodeBtn:    document.getElementById('copyCodeBtn'),
+    copyInstructionsBtn: document.getElementById('copyInstructionsBtn'),
+    testButton:     document.getElementById('testButton'),
+  };
+
+  // ===== Style selection =====
+  let selectedStyle = 'solid';
+  document.querySelectorAll('.style-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.style-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      selectedStyle = opt.dataset.style;
+      const radio = opt.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
+      regenerate();
+    });
+  });
+
+  // ===== Persistence =====
+  function loadConfig() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
+      if (saved.baseUrl) els.baseUrl.value = saved.baseUrl;
+    } catch (e) {}
+  }
+  function saveConfig() {
+    localStorage.setItem(CONFIG_KEY, JSON.stringify({
+      baseUrl: els.baseUrl.value.trim(),
+    }));
+  }
+
+  // ===== Build URL =====
+  function buildUrl() {
+    const base = els.baseUrl.value.trim();
+    const company = els.company.value.trim();
+    const email = els.email.value.trim();
+    if (!base || !company || !email) return null;
+    const params = new URLSearchParams();
+    params.set('company', company);
+    params.set('email',   email);
+    if (els.cc.value.trim())    params.set('cc',    els.cc.value.trim());
+    if (els.phone.value.trim()) params.set('phone', els.phone.value.trim());
+    return `${base}?${params.toString()}`;
+  }
+
+  // ===== Generate code =====
+  function buildCode(url, buttonText, style) {
+    // Inline CSS for portability — works on any website regardless of their styles
+    const styles = {
+      solid:   { bg: '#8b3a3a', color: '#fff', hoverBg: '#6f2d2d', border: '2px solid #8b3a3a' },
+      outline: { bg: 'transparent', color: '#8b3a3a', hoverBg: '#8b3a3a', hoverColor: '#fff', border: '2px solid #8b3a3a' },
+      minimal: { bg: '#1a1f2e', color: '#fff', hoverBg: '#3a4256', border: '2px solid #1a1f2e' },
+      warm:    { bg: '#b08d3f', color: '#fff', hoverBg: '#8d7032', border: '2px solid #b08d3f' },
+    };
+    const s = styles[style];
+    const inlineStyle = `display:inline-block;font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:600;font-size:16px;text-decoration:none;padding:14px 28px;border-radius:4px;background:${s.bg};color:${s.color};border:${s.border};transition:all 0.15s;cursor:pointer;`;
+    const hoverColor = s.hoverColor || s.color;
+
+    return `<!-- Payment Arrangement Request Button — Provided by Matejka Law -->
+<a href="${url}"
+   target="_blank"
+   rel="noopener noreferrer"
+   style="${inlineStyle}"
+   onmouseover="this.style.background='${s.hoverBg}';this.style.color='${hoverColor}';"
+   onmouseout="this.style.background='${s.bg}';this.style.color='${s.color}';">
+  ${buttonText}
+</a>`;
+  }
+
+  // ===== Build preview =====
+  function buildPreview(url, buttonText, style) {
+    const styleClass = `style-${style}`;
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="ml-button ${styleClass}">${buttonText}</a>`;
+  }
+
+  // ===== Build instructions block =====
+  function buildInstructions(code, company) {
+    return `Hi,
+
+Below is the HTML code for the "Request a Payment Arrangement" button for your website. This button takes tenants to a payment arrangement request form preset with ${company}'s information. Submissions will route directly to your office email.
+
+INSTRUCTIONS FOR YOUR WEB DEVELOPER:
+
+1. Decide which page on your website should display this button. Most clients use a "Resident Resources" page, "Tenant Forms" page, or a "Contact Us" page.
+
+2. Paste the code below into the page's HTML, exactly where you want the button to appear.
+
+3. The button is fully self-contained — no additional CSS or JavaScript files are needed.
+
+4. Save and publish the page.
+
+5. Test by clicking the button. It should open the payment arrangement form in a new tab with your company name displayed at the top.
+
+CODE:
+
+${code}
+
+NOTE: This button opens an external form provided by Matejka Law LLC. Updates to the form happen automatically — there is nothing for you to maintain.
+
+If you have questions about the form itself, contact Matejka Law directly.`;
+  }
+
+  // ===== Regenerate everything =====
+  function regenerate() {
+    saveConfig();
+    const url = buildUrl();
+    const buttonText = els.buttonText.value || 'Request a Payment Arrangement';
+
+    if (!url) {
+      els.codeOutput.innerHTML = '<span class="placeholder">Fill in client info above to generate code…</span>';
+      els.previewContainer.innerHTML = '<div style="color: var(--ink-soft); font-style: italic;">Preview will appear when client info is filled in.</div>';
+      els.copyCodeBtn.disabled = true;
+      els.copyInstructionsBtn.disabled = true;
+      els.testButton.disabled = true;
+      return;
+    }
+
+    const code = buildCode(url, buttonText, selectedStyle);
+    els.codeOutput.textContent = code;
+    els.previewContainer.innerHTML = buildPreview(url, buttonText, selectedStyle);
+    els.copyCodeBtn.disabled = false;
+    els.copyInstructionsBtn.disabled = false;
+    els.testButton.disabled = false;
+    els.testButton.dataset.url = url;
+  }
+
+  // ===== Button handlers =====
+  els.copyCodeBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(els.codeOutput.textContent).then(() => {
+      flashSuccess(els.copyCodeBtn, 'Copied!');
+    });
+  });
+
+  els.copyInstructionsBtn.addEventListener('click', () => {
+    const company = els.company.value.trim();
+    const code = els.codeOutput.textContent;
+    const fullText = buildInstructions(code, company);
+    navigator.clipboard.writeText(fullText).then(() => {
+      flashSuccess(els.copyInstructionsBtn, 'Copied!');
+    });
+  });
+
+  els.testButton.addEventListener('click', () => {
+    window.open(els.testButton.dataset.url, '_blank');
+  });
+
+  function flashSuccess(btn, text) {
+    const original = btn.textContent;
+    btn.textContent = text;
+    btn.classList.add('success-flash');
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove('success-flash');
+    }, 1400);
+  }
+
+  // ===== Wire up live regeneration =====
+  document.querySelectorAll('input').forEach(el => {
+    el.addEventListener('input', regenerate);
+  });
+
+  // ===== Init =====
+  loadConfig();
+</script>
+</body>
+</html>
