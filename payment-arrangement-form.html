@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Payment Arrangement Proposal | Tenant Request Form</title>
+<meta name="description" content="Submit a proposed payment arrangement for property manager review and approval." />
+
+<!-- ============================================================
+     INTEGRATION NOTES FOR DEVELOPER / WEBMASTER
+     ============================================================
+     This form is configured to submit via mailto: by default so it
+     works immediately with no backend. For production, replace the
+     handleSubmit() function's mailto block with one of:
+
+       1. Formspree:  fetch('https://formspree.io/f/YOUR_ID', {...})
+       2. Netlify Forms: add `netlify` and `data-netlify="true"` to <form>
+       3. Jotform: post to your Jotform endpoint
+       4. Custom API: post JSON to your firm's intake endpoint
+
+     The submission email/endpoint constant is at the top of the
+     <script> block: SUBMISSION_EMAIL.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink:        #1a1f2e;
+    --ink-soft:   #3a4256;
+    --paper:      #faf8f4;
+    --paper-2:    #f3efe7;
+    --rule:       #d8d2c4;
+    --accent:     #8b3a3a;       /* deep oxblood — legal, grounded */
+    --accent-2:   #c89368;       /* warm tan — approachable */
+    --gold:       #b08d3f;
+    --ok:         #2d6a4f;
+    --warn:       #92400e;
+    --warn-bg:    #fdf6e3;
+    --shadow:     0 1px 2px rgba(26,31,46,.04), 0 8px 24px rgba(26,31,46,.06);
+    --serif:      'Fraunces', Georgia, 'Times New Roman', serif;
+    --sans:       'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* subtle paper texture via layered gradients */
+  body {
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(176,141,63,.05) 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(139,58,58,.04) 0%, transparent 40%);
+    background-attachment: fixed;
+  }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* ===== Header ===== */
+  header.masthead {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 28px;
+    margin-bottom: 36px;
+  }
+  .eyebrow {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(32px, 5vw, 46px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    margin: 0 0 10px;
+    color: var(--ink);
+  }
+  h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+  .deck {
+    font-size: 16px;
+    color: var(--ink-soft);
+    max-width: 640px;
+    margin-top: 10px;
+  }
+
+  /* ===== Disclaimer banner — TOP ===== */
+  .banner {
+    background: var(--warn-bg);
+    border: 1px solid #e8d9a8;
+    border-left: 4px solid var(--gold);
+    padding: 18px 22px;
+    border-radius: 4px;
+    margin-bottom: 36px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .banner svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .banner h3 {
+    margin: 0 0 4px;
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--warn);
+  }
+  .banner p {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  /* ===== Sections ===== */
+  section.card {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 32px 36px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  section.card.locked {
+    background: var(--paper-2);
+    border-style: dashed;
+  }
+  .section-num {
+    display: inline-block;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.2;
+    margin: 0 0 6px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .section-sub {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin: 0 0 24px;
+    font-style: italic;
+  }
+
+  /* ===== Form fields ===== */
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 18px;
+  }
+  .row.three { grid-template-columns: 1fr 1fr 1fr; }
+  .row.full  { grid-template-columns: 1fr; }
+
+  @media (max-width: 640px) {
+    .row, .row.three { grid-template-columns: 1fr; }
+    section.card { padding: 24px 20px; }
+    .wrap { padding: 24px 16px 60px; }
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  label .req { color: var(--accent); margin-left: 2px; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"],
+  input[type="number"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 11px 14px;
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(139,58,58,.1);
+  }
+  input[readonly], input.calc {
+    background: var(--paper-2);
+    color: var(--ink-soft);
+    cursor: not-allowed;
+  }
+  /* Manager-locked fields: tinted accent border to signal "set by landlord" */
+  input.locked-field, select.locked-field {
+    background: var(--paper-2);
+    color: var(--ink-soft);
+    border-left: 3px solid var(--gold);
+    cursor: not-allowed;
+    font-weight: 500;
+  }
+  /* Pre-filled but editable fields */
+  input.prefilled-field {
+    border-left: 3px solid var(--ok);
+    background: #fafffa;
+  }
+  textarea { resize: vertical; min-height: 70px; }
+
+  .help {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 5px;
+    font-style: italic;
+  }
+
+  /* ===== Checkboxes ===== */
+  .checks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 24px;
+    margin: 8px 0 4px;
+  }
+  @media (max-width: 540px) { .checks { grid-template-columns: 1fr; } }
+  .check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background .12s;
+    font-size: 14.5px;
+    color: var(--ink);
+  }
+  .check:hover { background: var(--paper-2); }
+  .check input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    margin: 0;
+  }
+
+  /* ===== Payment schedule table ===== */
+  .schedule {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+  .schedule th {
+    text-align: left;
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+    padding: 10px 8px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .schedule td {
+    padding: 6px 4px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .schedule td:first-child {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--accent);
+    text-align: center;
+    width: 50px;
+  }
+  .schedule input { font-size: 14px; padding: 8px 10px; }
+  .schedule .currency-wrap {
+    position: relative;
+  }
+  .schedule .currency-wrap::before {
+    content: "$";
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-soft);
+    font-size: 14px;
+    pointer-events: none;
+  }
+  .schedule .currency-wrap input { padding-left: 22px; }
+
+  .schedule-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--paper-2);
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  .schedule-foot strong { font-family: var(--serif); font-size: 18px; color: var(--ink); }
+  .schedule-foot.balanced strong { color: var(--ok); }
+  .schedule-foot.unbalanced strong { color: var(--warn); }
+
+  /* ===== Locked / display-only sections ===== */
+  .locked-stamp {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 3px;
+    margin-left: 10px;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  .clause-display {
+    background: #fff;
+    border-left: 3px solid var(--rule);
+    padding: 14px 18px;
+    margin: 10px 0;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .clause-display strong { color: var(--ink); }
+
+  /* ===== Legal text blocks ===== */
+  .legal {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .legal strong { color: var(--ink); }
+  .legal p { margin: 0 0 12px; }
+
+  /* ===== Acknowledgment block ===== */
+  .ack {
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 18px 22px;
+    margin: 20px 0;
+  }
+  .ack label.check {
+    align-items: flex-start;
+    padding: 4px 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .ack input[type="checkbox"] { margin-top: 3px; }
+
+  /* ===== Tenant signature affirmation ===== */
+  .signature-area {
+    border-top: 1px solid var(--rule);
+    padding-top: 24px;
+    margin-top: 8px;
+  }
+  .typed-sig {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    padding: 14px 16px;
+    border-bottom: 2px solid var(--ink);
+    border-radius: 0;
+    background: transparent;
+  }
+  .typed-sig:focus {
+    border-bottom-color: var(--accent);
+    box-shadow: none;
+  }
+
+  /* ===== Submit ===== */
+  .submit-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-top: 20px;
+    padding: 32px 24px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 6px;
+  }
+  .submit-area p {
+    text-align: center;
+    margin: 0;
+    font-size: 14px;
+    max-width: 540px;
+    color: rgba(250,248,244,.75);
+  }
+  button.submit-btn {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: 0.02em;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+    box-shadow: 0 4px 14px rgba(139,58,58,.3);
+  }
+  button.submit-btn:hover { background: #6f2d2d; }
+  button.submit-btn:active { transform: translateY(1px); }
+  button.submit-btn:disabled {
+    background: #888;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* ===== Success state ===== */
+  .success {
+    display: none;
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-top: 4px solid var(--ok);
+    padding: 48px 36px;
+    border-radius: 6px;
+    text-align: center;
+  }
+  .success.show { display: block; }
+  .success h2 { font-size: 28px; margin-bottom: 14px; }
+  .success p { color: var(--ink-soft); margin: 8px 0; }
+  .success .next-steps {
+    text-align: left;
+    background: var(--paper-2);
+    padding: 20px 24px;
+    border-radius: 4px;
+    margin: 24px auto;
+    max-width: 500px;
+  }
+  .success .next-steps h4 {
+    font-family: var(--serif);
+    margin: 0 0 10px;
+    font-size: 16px;
+  }
+  .success .next-steps ol {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .success .next-steps li { margin-bottom: 6px; }
+
+  /* ===== Footer ===== */
+  footer.foot {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  footer.foot strong { color: var(--ink); }
+
+  /* ===== Validation ===== */
+  .field-error {
+    border-color: var(--accent) !important;
+    background: #fdf2f2;
+  }
+  .error-msg {
+    color: var(--accent);
+    font-size: 12.5px;
+    margin-top: 4px;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  /* ===== Print styles ===== */
+  @media print {
+    body { background: #fff; }
+    .submit-area, .banner { display: none; }
+    section.card { box-shadow: none; border: 1px solid #999; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ============ HEADER ============ -->
+  <header class="masthead">
+    <div class="eyebrow" id="eyebrowText">Tenant Request Portal</div>
+    <h1>Payment Arrangement <em>Proposal</em></h1>
+    <p class="deck">
+      Use this form to propose a payment plan for an outstanding balance on your rental account.
+      Submission does not create a binding agreement — your proposal will be reviewed by the
+      property manager, who has sole discretion to approve, modify, or deny the request.
+    </p>
+  </header>
+
+  <!-- ============ TOP DISCLAIMER BANNER ============ -->
+  <div class="banner" role="alert">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+      <line x1="12" y1="9" x2="12" y2="13"></line>
+      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg>
+    <div>
+      <h3>This is a proposal, not a binding agreement.</h3>
+      <p>
+        The terms you submit below are <strong>subject to review and final approval by the property manager</strong>.
+        No payment arrangement is in effect, and your obligations under the Lease Agreement remain unchanged,
+        until you receive written confirmation of approval. Continue paying rent as required by your lease.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============ PRE-FILL EXPLAINER (shown only when manager pre-filled data) ============ -->
+  <div class="banner prefill-banner" id="prefillBanner" style="display: none; background: #f0f7f0; border-color: #b8d4b8; border-left-color: var(--ok);">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+    <div>
+      <h3 style="color: #2d6a4f;">Some information has been pre-filled for you.</h3>
+      <p>
+        Your property manager has filled in the property details, lease information, and balance owed. Fields with a <strong style="border-left: 3px solid var(--gold); padding-left: 6px;">gold border</strong> are locked and cannot be changed. Fields with a <strong style="border-left: 3px solid var(--ok); padding-left: 6px;">green border</strong> have been suggested but you may correct them. You only need to provide your proposed payment dates, amounts, and signature.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============ SELF-SERVICE EXPLAINER (shown when no tenant data is pre-filled) ============ -->
+  <div class="banner selfservice-banner" id="selfserviceBanner" style="display: none; background: #f0f4fa; border-color: #b8c8e0; border-left-color: #4a6fa5;">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4a6fa5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="16" x2="12" y2="12"></line>
+      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+    </svg>
+    <div>
+      <h3 style="color: #4a6fa5;">Before you begin</h3>
+      <p>
+        Have your <strong>lease agreement</strong> and your <strong>most recent ledger or balance statement</strong> ready. You'll need to enter your tenant information, property details, and the exact balance owed. Make sure all amounts match your records exactly — discrepancies may delay or prevent approval.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============ FORM ============ -->
+  <form id="paymentForm" novalidate>
+
+    <!-- ===== TENANT & PROPERTY INFO ===== -->
+    <section class="card">
+      <div class="section-num">Section I</div>
+      <h2>Tenant &amp; Property Information</h2>
+      <p class="section-sub">Tell us who you are and which property this proposal relates to.</p>
+
+      <div class="row">
+        <div>
+          <label>Date of Submission <span class="req">*</span></label>
+          <input type="date" name="submissionDate" id="submissionDate" required>
+        </div>
+        <div>
+          <label>Property Manager / Landlord <span class="req">*</span></label>
+          <input type="text" name="landlord" id="landlordInput" placeholder="e.g., Family Owned Property Management" required>
+        </div>
+      </div>
+
+      <div class="row full">
+        <div>
+          <label>Tenant Name(s) <span class="req">*</span></label>
+          <input type="text" name="tenantNames" id="tenantNames" placeholder="Full legal name(s) of all tenants on the lease" required>
+          <div class="help">List every tenant who signed the lease.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Email Address <span class="req">*</span></label>
+          <input type="email" name="email" id="tenantEmail" placeholder="you@email.com" required>
+        </div>
+        <div>
+          <label>Phone Number <span class="req">*</span></label>
+          <input type="tel" name="phone" id="tenantPhone" placeholder="(843) 555-0000" required>
+        </div>
+      </div>
+
+      <div class="row full">
+        <div>
+          <label>Property Address <span class="req">*</span></label>
+          <input type="text" name="propertyAddress" id="propertyAddress" placeholder="Street address, unit, city, state, ZIP" required>
+        </div>
+      </div>
+
+      <div class="row three">
+        <div>
+          <label>Lease Start Date <span class="req">*</span></label>
+          <input type="date" name="leaseStart" id="leaseStart" required>
+        </div>
+        <div>
+          <label>Lease End Date <span class="req">*</span></label>
+          <input type="date" name="leaseEnd" id="leaseEnd" required>
+        </div>
+        <div>
+          <label>Monthly Rent Amount <span class="req">*</span></label>
+          <input type="number" name="monthlyRent" id="monthlyRent" placeholder="0.00" step="0.01" min="0" required>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== OUTSTANDING BALANCE ===== -->
+    <section class="card">
+      <div class="section-num">Section II</div>
+      <h2>Outstanding Balance</h2>
+      <p class="section-sub">What do you currently owe, and what does that balance consist of?</p>
+
+      <div class="row">
+        <div>
+          <label>Total Outstanding Balance Owed <span class="req">*</span></label>
+          <input type="number" name="totalBalance" id="totalBalance" placeholder="0.00" step="0.01" min="0" required>
+          <div class="help">Enter the total amount as of the date of this proposal.</div>
+        </div>
+        <div>
+          <label>As of Date <span class="req">*</span></label>
+          <input type="date" name="balanceAsOf" id="balanceAsOf" required>
+        </div>
+      </div>
+
+      <div style="margin-top: 8px;">
+        <label>This Balance Includes (check all that apply):</label>
+        <div class="checks">
+          <label class="check"><input type="checkbox" name="includes" value="Past Due Rent"> Past Due Rent</label>
+          <label class="check"><input type="checkbox" name="includes" value="Late Fees"> Late Fees</label>
+          <label class="check"><input type="checkbox" name="includes" value="Court Costs / Legal Fees"> Court Costs / Legal Fees</label>
+          <label class="check"><input type="checkbox" name="includes" value="Other"> Other (specify below)</label>
+        </div>
+        <div style="margin-top: 12px;">
+          <input type="text" name="includesOther" placeholder="If 'Other', describe…">
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PROPOSED PAYMENT SCHEDULE ===== -->
+    <section class="card">
+      <div class="section-num">Section III</div>
+      <h2>Proposed Payment Schedule</h2>
+      <p class="section-sub">
+        Propose how you intend to pay the outstanding balance. These payments are <strong>in addition to</strong>
+        — not a substitute for — your regular monthly rent.
+      </p>
+
+      <table class="schedule" id="schedule">
+        <thead>
+          <tr>
+            <th style="text-align:center;">#</th>
+            <th>Proposed Due Date</th>
+            <th>Payment Amount</th>
+            <th>Remaining Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 6 rows generated -->
+        </tbody>
+      </table>
+
+      <div class="schedule-foot" id="scheduleFoot">
+        <span>Total of proposed payments: <strong id="totalProposed">$0.00</strong></span>
+        <span id="balanceCheck">Enter outstanding balance above to verify totals match.</span>
+      </div>
+
+      <div class="row full" style="margin-top: 22px;">
+        <div>
+          <label>Preferred Method(s) of Payment <span class="req">*</span></label>
+          <input type="text" name="paymentMethod" placeholder="e.g., online portal, money order, certified funds" required>
+          <div class="help">Subject to landlord approval. Personal checks may not be accepted.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== HARDSHIP EXPLANATION (NEW) ===== -->
+    <section class="card">
+      <div class="section-num">Section IV</div>
+      <h2>Reason for Request</h2>
+      <p class="section-sub">Briefly explain the circumstances that led to the outstanding balance. This helps the property manager evaluate your proposal.</p>
+
+      <div class="row full">
+        <div>
+          <label>Explanation of Circumstances <span class="opt" style="color: var(--ink-soft); font-weight: 400; text-transform: none; letter-spacing: 0;">(optional but recommended)</span></label>
+          <textarea name="hardshipExplanation" rows="4" placeholder="e.g., reduced work hours, medical expense, family emergency, awaiting back pay, etc."></textarea>
+          <div class="help">A brief, honest explanation often improves the chance of approval. This information will be considered confidentially by the property manager.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Expected Date Circumstances Will Improve <span class="opt" style="color: var(--ink-soft); font-weight: 400; text-transform: none; letter-spacing: 0;">(optional)</span></label>
+          <input type="date" name="recoveryDate">
+          <div class="help">If you have a specific date when you expect your finances to stabilize.</div>
+        </div>
+        <div>
+          <label>Have You Had a Prior Payment Arrangement Here? <span class="req">*</span></label>
+          <select name="priorArrangement" required>
+            <option value="">Select...</option>
+            <option value="No">No, this is my first request</option>
+            <option value="Yes - completed">Yes, and I completed it successfully</option>
+            <option value="Yes - did not complete">Yes, but I did not complete it</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CURRENT RENT OBLIGATION (acknowledgment) ===== -->
+    <section class="card">
+      <div class="section-num">Section V</div>
+      <h2>Current Rent Obligation</h2>
+      <div class="legal">
+        <p>
+          Tenant acknowledges and agrees that all current and future rent payments must be paid
+          <strong>in full and on time</strong> in accordance with the terms of the Lease Agreement,
+          <strong>in addition to</strong> the payments set forth in the schedule above. The arrangement
+          payments are supplemental to — not a substitute for — regular monthly rent. Failure to pay
+          current rent on time shall constitute a default under this Agreement and the Lease.
+        </p>
+      </div>
+      <div class="ack">
+        <label class="check">
+          <input type="checkbox" name="ackCurrentRent" required>
+          <span>I understand that I must continue to pay my full monthly rent on time, separately from any payments under this proposed arrangement.</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ===== LATE FEE DETERMINATION (DISPLAY-ONLY, LANDLORD DECIDES) ===== -->
+    <section class="card locked">
+      <div class="section-num">Section VI <span class="locked-stamp">Landlord Determines</span></div>
+      <h2>Late Fee Determination</h2>
+      <p class="section-sub">
+        The property manager will select one of the following options upon review.
+        This is shown for your awareness — you do not select it.
+      </p>
+
+      <div class="clause-display">
+        <strong>Option A — Late Fees Waived Upon Completion.</strong>
+        All accrued late fees included in the outstanding balance shall be waived
+        <strong>only upon</strong> Tenant&rsquo;s full and timely completion of all payments under this
+        Agreement. If Tenant defaults on any payment, all previously waived late fees shall be
+        immediately reinstated and become due and payable.
+      </div>
+
+      <div class="clause-display">
+        <strong>Option B — Late Fees Continue to Accrue.</strong>
+        Late fees shall continue to accrue on any unpaid balance in accordance with the terms of the
+        Lease Agreement until the total outstanding balance is paid in full. Any additional late fees
+        incurred during the term of this Agreement shall be added to the outstanding balance.
+      </div>
+    </section>
+
+    <!-- ===== LEGAL TERMS — LANDLORD'S RIGHT TO CANCEL, DEFAULT, COURTESY DISCLAIMER ===== -->
+    <section class="card">
+      <div class="section-num">Section VII</div>
+      <h2>Terms You Are Agreeing To</h2>
+      <p class="section-sub">Please read each clause carefully and acknowledge below.</p>
+
+      <div class="legal">
+        <p>
+          <strong>1. Landlord&rsquo;s Right to Cancel.</strong> Landlord reserves the right to cancel this
+          Payment Arrangement Agreement at any time and for any reason prior to the outstanding balance
+          being paid in full. Upon cancellation, the entire remaining outstanding balance shall become
+          immediately due and payable, and Landlord may pursue any and all remedies available under the
+          Lease Agreement and applicable law, including but not limited to the filing of an eviction action.
+        </p>
+
+        <p>
+          <strong>2. Default.</strong> A default under this Agreement shall occur if Tenant: (a) fails to
+          make any arrangement payment on or before the scheduled due date; (b) fails to pay current rent
+          in full and on time; or (c) otherwise violates any term of the Lease Agreement. Upon default,
+          the entire remaining balance shall become immediately due and payable, and Landlord may pursue
+          all available legal remedies without further notice.
+        </p>
+
+        <p>
+          <strong>3. Courtesy Agreement Disclaimer.</strong>
+          <strong style="text-transform: uppercase;"> Tenant acknowledges and agrees that this payment
+          arrangement is a voluntary courtesy extended by the Landlord and is not required by law or by
+          the Lease Agreement.</strong> This Agreement has been offered by Landlord in an effort to
+          assist Tenant in resolving the outstanding balance and to avoid the necessity of filing an
+          eviction action. However, Landlord expressly retains the right to file for eviction at any
+          time in accordance with applicable law, including during the term of this Agreement, if
+          Landlord determines in its sole discretion that such action is warranted. This Agreement does
+          not constitute a waiver of any rights or remedies available to Landlord under the Lease
+          Agreement or South Carolina law.
+        </p>
+
+        <p>
+          <strong>4. General Provisions.</strong> This Agreement does not modify, amend, or replace the
+          Lease Agreement in any way. All terms and conditions of the Lease Agreement remain in full force
+          and effect. This Agreement shall be governed by the laws of the State of South Carolina. This
+          Agreement constitutes the entire understanding between the parties with respect to the payment
+          arrangement described herein and supersedes any prior oral or written discussions regarding
+          the same. Any modifications to this Agreement must be in writing and signed by both parties.
+        </p>
+      </div>
+
+      <div class="ack">
+        <label class="check">
+          <input type="checkbox" name="ackTerms" required>
+          <span>I have read, understand, and agree to all terms and conditions set forth above.</span>
+        </label>
+        <label class="check">
+          <input type="checkbox" name="ackProposal" required>
+          <span>I understand this is a <strong>proposed</strong> agreement that becomes effective only upon written approval by the property manager. Until then, I remain fully obligated under the existing Lease Agreement.</span>
+        </label>
+        <label class="check">
+          <input type="checkbox" name="ackEviction" required>
+          <span>I understand that submitting this proposal does <strong>not</strong> prevent the landlord from pursuing eviction or other legal remedies.</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ===== TENANT SIGNATURE / AFFIRMATION ===== -->
+    <section class="card">
+      <div class="section-num">Section VIII</div>
+      <h2>Tenant Affirmation</h2>
+      <p class="section-sub">Type your full legal name to affirm this proposal.</p>
+
+      <div class="signature-area">
+        <div class="row">
+          <div>
+            <label>Tenant — Type Full Legal Name <span class="req">*</span></label>
+            <input type="text" class="typed-sig" name="tenantSignature" placeholder="Your full legal name" required>
+            <div class="help">By typing your name, you affirm the truthfulness of the information provided and your acknowledgment of the terms above.</div>
+          </div>
+          <div>
+            <label>Today&rsquo;s Date <span class="req">*</span></label>
+            <input type="date" name="tenantSigDate" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Co-Tenant — Type Full Legal Name (if applicable)</label>
+            <input type="text" class="typed-sig" name="coTenantSignature" placeholder="Co-tenant full legal name (optional)">
+          </div>
+          <div>
+            <label>Date</label>
+            <input type="date" name="coTenantSigDate">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SUBMIT ===== -->
+    <div class="submit-area">
+      <p>
+        Submitting this form sends your proposal to the property manager for review.
+        You will receive a written response — approval, modification, or denial — at the email address provided above.
+      </p>
+      <button type="submit" class="submit-btn" id="submitBtn">Submit Proposal for Review</button>
+      <p style="font-size: 12px; color: rgba(250,248,244,.6); margin-top: 6px;">
+        A copy of your submission will be sent to your email for your records.
+      </p>
+    </div>
+  </form>
+
+  <!-- ============ SUCCESS STATE ============ -->
+  <div class="success" id="successPanel">
+    <h2>Proposal Submitted</h2>
+    <p>Thank you. Your payment arrangement proposal has been sent to the property manager for review.</p>
+    <div class="next-steps">
+      <h4>What happens next</h4>
+      <ol>
+        <li>The property manager will review your proposal, typically within 3&ndash;5 business days.</li>
+        <li>You will receive an email response indicating approval, requested modifications, or denial.</li>
+        <li>If approved, you will receive a final agreement to sign before the arrangement takes effect.</li>
+        <li>Until you receive written approval, continue meeting all obligations under your existing Lease Agreement, including timely payment of full monthly rent.</li>
+      </ol>
+    </div>
+    <p style="font-size: 13px;">
+      Questions? Contact <span id="contactLine">the property management office</span> directly.
+    </p>
+    <button type="button" class="submit-btn" onclick="window.print()" style="margin-top: 16px; background: var(--ink-soft);">Print a Copy of My Submission</button>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="foot">
+    <p>
+      <strong>Important:</strong> This form generates a proposed agreement only.
+      No payment arrangement is in effect until approved in writing by the property manager.
+    </p>
+    <p style="margin-top: 6px;">Governed by the laws of the State of South Carolina.</p>
+  </footer>
+
+</div>
+
+<script>
+  /* ============================================================
+     CONFIG — driven by URL parameters
+     ============================================================
+     Each property management client gets a unique link with their
+     details encoded as URL parameters. Example:
+
+       payment-arrangement.html?company=Smith+Realty
+                               &email=manager@smithrealty.com
+                               &cc=copy@smithrealty.com   (optional)
+
+     Supported parameters:
+       company  — Property management company name (required)
+       email    — Where the proposal submission gets routed (required)
+       cc       — Optional carbon-copy recipient
+       phone    — Optional phone number to display in success screen
+
+     If parameters are missing, the form falls back to the DEFAULT
+     values below — useful for previewing or for your own firm's use.
+     ============================================================ */
+  const DEFAULT_EMAIL   = 'arrangements@yourfirm.com';
+  const DEFAULT_COMPANY = 'Property Management';
+
+  /* ============================================================
+     FORMSPREE ENDPOINT
+     ============================================================
+     Set this to your Formspree form endpoint after creating the
+     form and enabling "Dynamic Email Routing" in Formspree settings.
+
+     Get this URL from: https://formspree.io  →  your form  →  Integration
+     Format: https://formspree.io/f/XXXXXXXX
+
+     Until you set this (leave empty string), the form falls back
+     to mailto: which works for testing but is NOT recommended for
+     production use with multiple clients.
+     ============================================================ */
+  const FORMSPREE_ENDPOINT = ''; // <-- PASTE YOUR FORMSPREE ENDPOINT HERE
+
+  // Read URL parameters
+  const params = new URLSearchParams(window.location.search);
+  const SUBMISSION_EMAIL = params.get('email')   || DEFAULT_EMAIL;
+  const SUBMISSION_CC    = params.get('cc')      || '';
+  const FIRM_NAME        = params.get('company') || DEFAULT_COMPANY;
+  const FIRM_PHONE       = params.get('phone')   || '';
+
+  // Apply firm name to the page
+  document.title = `Payment Arrangement Proposal | ${FIRM_NAME}`;
+  document.getElementById('eyebrowText').textContent = FIRM_NAME;
+
+  // Populate the contact line on the success screen
+  const contactParts = [FIRM_NAME];
+  if (FIRM_PHONE) contactParts.push(`at ${FIRM_PHONE}`);
+  document.getElementById('contactLine').textContent = contactParts.join(' ');
+
+  // Pre-fill and lock the landlord field if company was supplied via URL
+  const landlordInput = document.getElementById('landlordInput');
+  if (params.get('company')) {
+    landlordInput.value = FIRM_NAME;
+    landlordInput.setAttribute('readonly', 'readonly');
+    landlordInput.classList.add('locked-field');
+  }
+
+  /* ============================================================
+     MANAGER PRE-FILL — populate fields from URL parameters
+
+     The property manager generates a unique link via the pre-fill
+     tool. That link contains URL parameters with the tenant/property/
+     balance information already filled in. The tenant only sees
+     those fields as read-only (or editable for their own contact
+     info, per design choice).
+
+     Lock policy:
+       LOCKED:    propertyAddress, leaseStart, leaseEnd, monthlyRent,
+                  totalBalance, balanceAsOf, tenantNames
+       EDITABLE:  email, phone (tenant can correct typos)
+     ============================================================ */
+
+  // Helper: pre-fill a field, optionally lock it
+  function preFillField(paramName, fieldId, locked) {
+    const value = params.get(paramName);
+    if (!value) return;
+    const field = document.getElementById(fieldId);
+    if (!field) return;
+    field.value = value;
+    if (locked) {
+      field.setAttribute('readonly', 'readonly');
+      field.classList.add('locked-field');
+    } else {
+      field.classList.add('prefilled-field');
+    }
+  }
+
+  // LOCKED fields — financial / contractual facts only the manager can set
+  preFillField('tenant',       'tenantNames',      true);
+  preFillField('property',     'propertyAddress',  true);
+  preFillField('leaseStart',   'leaseStart',       true);
+  preFillField('leaseEnd',     'leaseEnd',         true);
+  preFillField('rent',         'monthlyRent',      true);
+  preFillField('balance',      'totalBalance',     true);
+  preFillField('balanceDate',  'balanceAsOf',      true);
+
+  // EDITABLE pre-fills — tenant can correct their own contact info
+  preFillField('tenantEmail',  'tenantEmail',      false);
+  preFillField('tenantPhone',  'tenantPhone',      false);
+
+  // Pre-checked balance components from manager
+  const includes = params.get('includes');
+  if (includes) {
+    const includesList = includes.split(',').map(s => s.trim());
+    document.querySelectorAll('input[name="includes"]').forEach(cb => {
+      if (includesList.includes(cb.value)) cb.checked = true;
+    });
+  }
+
+  // Show appropriate banner based on which mode this is
+  const hasTenantData = params.get('tenant') || params.get('balance');
+  const hasCompany = params.get('company');
+
+  if (hasTenantData) {
+    // PRE-FILLED MODE: manager generated a unique link for this tenant
+    const banner = document.getElementById('prefillBanner');
+    if (banner) banner.style.display = 'flex';
+    // Trigger schedule recalculation since balance was pre-filled
+    setTimeout(() => recalcSchedule(), 100);
+  } else if (hasCompany) {
+    // SELF-SERVICE MODE: tenant arrived from a "Request Payment Arrangement" button
+    // on the property manager's website. Company info is set, but tenant fills in everything else.
+    const banner = document.getElementById('selfserviceBanner');
+    if (banner) banner.style.display = 'flex';
+  }
+  // If neither: form is being previewed without any params — no banner shown.
+
+  // If no email param was provided, warn in console (helpful for debugging)
+  if (!params.get('email')) {
+    console.warn('[Payment Form] No ?email= parameter set. Submissions will route to:', DEFAULT_EMAIL);
+  }
+
+  /* ============================================================
+     INIT
+     ============================================================ */
+  // default today's date in date fields where appropriate
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById('submissionDate').value = today;
+
+  /* ============================================================
+     PAYMENT SCHEDULE — generate 6 rows
+     ============================================================ */
+  const tbody = document.querySelector('#schedule tbody');
+  const NUM_ROWS = 6;
+  for (let i = 1; i <= NUM_ROWS; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i}</td>
+      <td><input type="date" name="payDate${i}" data-row="${i}"></td>
+      <td><div class="currency-wrap"><input type="number" name="payAmount${i}" step="0.01" min="0" placeholder="0.00" data-row="${i}" class="amt"></div></td>
+      <td><div class="currency-wrap"><input type="text" name="payRemaining${i}" class="calc" readonly placeholder="0.00"></div></td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  /* ============================================================
+     LIVE CALCULATIONS
+     ============================================================ */
+  const totalBalanceInput = document.getElementById('totalBalance');
+  const totalProposedEl = document.getElementById('totalProposed');
+  const balanceCheckEl = document.getElementById('balanceCheck');
+  const scheduleFootEl = document.getElementById('scheduleFoot');
+
+  function recalcSchedule() {
+    const totalBal = parseFloat(totalBalanceInput.value) || 0;
+    let runningTotal = 0;
+    let remaining = totalBal;
+
+    for (let i = 1; i <= NUM_ROWS; i++) {
+      const amtInput = document.querySelector(`[name="payAmount${i}"]`);
+      const remInput = document.querySelector(`[name="payRemaining${i}"]`);
+      const amt = parseFloat(amtInput.value) || 0;
+      runningTotal += amt;
+      if (amt > 0) {
+        remaining -= amt;
+        remInput.value = remaining.toFixed(2);
+      } else {
+        remInput.value = '';
+      }
+    }
+
+    totalProposedEl.textContent = '$' + runningTotal.toFixed(2);
+
+    // status
+    scheduleFootEl.classList.remove('balanced', 'unbalanced');
+    if (totalBal === 0) {
+      balanceCheckEl.textContent = 'Enter outstanding balance above to verify totals match.';
+    } else if (Math.abs(runningTotal - totalBal) < 0.01) {
+      balanceCheckEl.innerHTML = '✓ Payments equal outstanding balance.';
+      scheduleFootEl.classList.add('balanced');
+    } else if (runningTotal < totalBal) {
+      const short = (totalBal - runningTotal).toFixed(2);
+      balanceCheckEl.innerHTML = `Short by <strong>$${short}</strong>`;
+      scheduleFootEl.classList.add('unbalanced');
+    } else {
+      const over = (runningTotal - totalBal).toFixed(2);
+      balanceCheckEl.innerHTML = `Over by <strong>$${over}</strong>`;
+      scheduleFootEl.classList.add('unbalanced');
+    }
+  }
+
+  totalBalanceInput.addEventListener('input', recalcSchedule);
+  document.querySelectorAll('.amt').forEach(el => el.addEventListener('input', recalcSchedule));
+
+  /* ============================================================
+     SUBMISSION HANDLER
+     ============================================================ */
+  const form = document.getElementById('paymentForm');
+  const successPanel = document.getElementById('successPanel');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // basic native validation
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    // gather data
+    const fd = new FormData(form);
+    const data = {};
+    fd.forEach((value, key) => {
+      if (data[key]) {
+        data[key] = [].concat(data[key], value);
+      } else {
+        data[key] = value;
+      }
+    });
+
+    // build a readable text version for the property manager
+    const lines = [];
+    lines.push('PAYMENT ARRANGEMENT PROPOSAL — TENANT SUBMISSION');
+    lines.push('='.repeat(55));
+    lines.push('');
+    lines.push('Submitted: ' + new Date().toLocaleString());
+    lines.push('');
+    lines.push('--- TENANT & PROPERTY ---');
+    lines.push('Date of Submission: ' + (data.submissionDate || ''));
+    lines.push('Landlord/PM:        ' + (data.landlord || ''));
+    lines.push('Tenant Name(s):     ' + (data.tenantNames || ''));
+    lines.push('Email:              ' + (data.email || ''));
+    lines.push('Phone:              ' + (data.phone || ''));
+    lines.push('Property Address:   ' + (data.propertyAddress || ''));
+    lines.push('Lease Start:        ' + (data.leaseStart || ''));
+    lines.push('Lease End:          ' + (data.leaseEnd || ''));
+    lines.push('Monthly Rent:       $' + (data.monthlyRent || ''));
+    lines.push('');
+    lines.push('--- OUTSTANDING BALANCE ---');
+    lines.push('Total Owed:    $' + (data.totalBalance || ''));
+    lines.push('As of Date:    ' + (data.balanceAsOf || ''));
+    const includes = [].concat(data.includes || []).filter(Boolean);
+    lines.push('Includes:      ' + (includes.length ? includes.join(', ') : '(none selected)'));
+    if (data.includesOther) lines.push('Other Detail:  ' + data.includesOther);
+    lines.push('');
+    lines.push('--- PROPOSED PAYMENT SCHEDULE ---');
+    for (let i = 1; i <= NUM_ROWS; i++) {
+      const d = data['payDate' + i] || '';
+      const a = data['payAmount' + i] || '';
+      if (d || a) {
+        lines.push(`  #${i}: ${d}  —  $${a}`);
+      }
+    }
+    lines.push('Total Proposed:  ' + totalProposedEl.textContent);
+    lines.push('Payment Method:  ' + (data.paymentMethod || ''));
+    lines.push('');
+    lines.push('--- REASON FOR REQUEST ---');
+    lines.push('Prior Arrangement:   ' + (data.priorArrangement || '(not specified)'));
+    if (data.recoveryDate) lines.push('Expected Recovery:   ' + data.recoveryDate);
+    lines.push('Explanation:');
+    lines.push((data.hardshipExplanation || '(none provided)').split('\n').map(l => '  ' + l).join('\n'));
+    lines.push('');
+    lines.push('--- ACKNOWLEDGMENTS ---');
+    lines.push('Current Rent Obligation:    ' + (data.ackCurrentRent ? 'YES' : 'NO'));
+    lines.push('Terms Acknowledged:         ' + (data.ackTerms ? 'YES' : 'NO'));
+    lines.push('Understands Proposal Only:  ' + (data.ackProposal ? 'YES' : 'NO'));
+    lines.push('Understands Eviction Risk:  ' + (data.ackEviction ? 'YES' : 'NO'));
+    lines.push('');
+    lines.push('--- AFFIRMATION (TYPED) ---');
+    lines.push('Tenant Signature:    ' + (data.tenantSignature || ''));
+    lines.push('Date:                ' + (data.tenantSigDate || ''));
+    if (data.coTenantSignature) {
+      lines.push('Co-Tenant Signature: ' + data.coTenantSignature);
+      lines.push('Date:                ' + (data.coTenantSigDate || ''));
+    }
+    lines.push('');
+    lines.push('---');
+    lines.push('NOTE: This is a proposed agreement submitted by the tenant.');
+    lines.push('Final approval requires written confirmation by the property manager.');
+
+    const body = lines.join('\n');
+    const subject = `Payment Arrangement Proposal — ${data.tenantNames || 'Tenant'} — ${data.propertyAddress || ''}`;
+
+    /* ============================================================
+       SUBMISSION ROUTING
+
+       Primary path:  Formspree (server-side, reliable, audit trail)
+       Fallback path: mailto: (only if Formspree endpoint not configured)
+       ============================================================ */
+    if (FORMSPREE_ENDPOINT) {
+      // ===== PRODUCTION PATH: Formspree =====
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+
+      // Build the payload. Formspree's Dynamic Email Routing reads
+      // the special _replyto field for Reply-To and uses the recipient
+      // configured in your Formspree dashboard rules to route to the
+      // landlord email passed in the URL.
+      const payload = {
+        // Formspree special fields
+        _subject:  subject,
+        _replyto:  data.email,                 // tenant email becomes Reply-To
+        _cc:       SUBMISSION_CC || undefined, // optional CC
+
+        // The routing field — used by Formspree's routing rules to send
+        // the email to the correct property manager (see setup notes)
+        recipient_email:   SUBMISSION_EMAIL,
+        recipient_company: FIRM_NAME,
+
+        // Human-readable summary at the top of the email
+        summary: body,
+
+        // All raw form data (so it's preserved in the Formspree dashboard)
+        ...data
+      };
+
+      fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => {
+        if (response.ok) {
+          showSuccess();
+        } else {
+          return response.json().then(err => {
+            throw new Error(err.error || 'Submission failed');
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Submission error:', error);
+        alert('There was a problem submitting your proposal. Please try again, or contact ' + FIRM_NAME + ' directly.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Proposal for Review';
+      });
+
+    } else {
+      // ===== FALLBACK PATH: mailto (testing / no backend configured) =====
+      console.warn('[Payment Form] FORMSPREE_ENDPOINT not configured — falling back to mailto.');
+      const ccParam = SUBMISSION_CC ? `&cc=${encodeURIComponent(SUBMISSION_CC)}` : '';
+      const mailtoLink = `mailto:${SUBMISSION_EMAIL}?subject=${encodeURIComponent(subject)}${ccParam}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoLink;
+      setTimeout(showSuccess, 600);
+    }
+  });
+
+  function showSuccess() {
+    form.style.display = 'none';
+    successPanel.classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
