@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Generate Tenant Payment Arrangement Link</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink:        #1a1f2e;
+    --ink-soft:   #3a4256;
+    --paper:      #faf8f4;
+    --paper-2:    #f3efe7;
+    --rule:       #d8d2c4;
+    --accent:     #8b3a3a;
+    --gold:       #b08d3f;
+    --ok:         #2d6a4f;
+    --warn:       #92400e;
+    --warn-bg:    #fdf6e3;
+    --shadow:     0 1px 2px rgba(26,31,46,.04), 0 8px 24px rgba(26,31,46,.06);
+    --serif:      'Fraunces', Georgia, serif;
+    --sans:       'Manrope', -apple-system, sans-serif;
+    --mono:       'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(176,141,63,.05) 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(139,58,58,.04) 0%, transparent 40%);
+    background-attachment: fixed;
+  }
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+  header.masthead {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 24px;
+    margin-bottom: 28px;
+  }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(30px, 4.5vw, 40px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    margin: 0 0 8px;
+  }
+  h1 em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .deck { color: var(--ink-soft); max-width: 620px; margin: 6px 0 0; font-size: 15px; }
+
+  /* Setup banner */
+  .setup-banner {
+    background: var(--warn-bg);
+    border: 1px solid #e8d9a8;
+    border-left: 4px solid var(--gold);
+    padding: 16px 20px;
+    border-radius: 4px;
+    margin-bottom: 28px;
+    font-size: 14px;
+  }
+  .setup-banner h3 {
+    margin: 0 0 6px;
+    font-family: var(--serif);
+    font-size: 16px;
+    color: var(--warn);
+  }
+  .setup-banner p { margin: 0; color: var(--ink-soft); }
+
+  section.card {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 28px 32px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow);
+  }
+  section.card.config {
+    background: var(--paper-2);
+    border-style: dashed;
+  }
+
+  .section-num {
+    display: inline-block;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 22px;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .section-sub {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: 0 0 22px;
+    font-style: italic;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 14px;
+  }
+  .row.three { grid-template-columns: 1fr 1fr 1fr; }
+  .row.full  { grid-template-columns: 1fr; }
+  @media (max-width: 640px) {
+    .row, .row.three { grid-template-columns: 1fr; }
+    section.card { padding: 22px 20px; }
+    .wrap { padding: 24px 16px 60px; }
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  label .req { color: var(--accent); }
+  label .opt { color: var(--ink-soft); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11px; }
+
+  input[type="text"], input[type="email"], input[type="tel"],
+  input[type="date"], input[type="number"], input[type="url"],
+  textarea, select {
+    width: 100%;
+    padding: 10px 13px;
+    font-family: var(--sans);
+    font-size: 14.5px;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(139,58,58,.1);
+  }
+
+  .help {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .checks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 20px;
+    margin-top: 6px;
+  }
+  @media (max-width: 540px) { .checks { grid-template-columns: 1fr; } }
+  .check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: background .12s;
+    font-size: 14px;
+  }
+  .check:hover { background: var(--paper-2); }
+  .check input[type="checkbox"] {
+    width: 17px; height: 17px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    margin: 0;
+  }
+
+  /* Output */
+  .output-block {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 6px;
+    padding: 20px 22px;
+    margin-top: 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    word-break: break-all;
+    user-select: all;
+    min-height: 70px;
+  }
+  .output-block .placeholder {
+    color: rgba(250,248,244,.4);
+    font-family: var(--sans);
+    font-style: italic;
+  }
+
+  .button-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  button {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid var(--rule);
+    background: #fff;
+    color: var(--ink);
+    padding: 10px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  button:hover {
+    background: var(--paper-2);
+    border-color: var(--ink-soft);
+  }
+  button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  button.primary:hover { background: #6f2d2d; }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  button.success-flash {
+    background: var(--ok) !important;
+    border-color: var(--ok) !important;
+    color: #fff !important;
+  }
+
+  .preview-section {
+    background: var(--paper-2);
+    border: 1px dashed var(--rule);
+    padding: 18px 22px;
+    border-radius: 4px;
+    margin-top: 18px;
+    font-size: 14px;
+  }
+  .preview-section strong { color: var(--ink); }
+  .preview-section .body {
+    margin-top: 8px;
+    white-space: pre-wrap;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  footer.foot {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  footer.foot strong { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow" id="companyEyebrow">Property Management Tool</div>
+    <h1>Generate Tenant <em>Payment Arrangement</em> Link</h1>
+    <p class="deck">Fill in the tenant and balance information, then send the generated link to your tenant. They'll only need to propose payment dates and amounts. The completed proposal will route directly to your inbox for review.</p>
+  </header>
+
+  <!-- One-time setup banner: only visible if config not set -->
+  <div class="setup-banner" id="setupBanner" style="display: none;">
+    <h3>One-time setup needed</h3>
+    <p>Open Section I below and set your company info. This is saved in your browser, so you only do it once.</p>
+  </div>
+
+  <!-- ===== SECTION I — One-time company configuration ===== -->
+  <section class="card config">
+    <div class="section-num">Section I — One-Time Setup</div>
+    <h2>Your Company Information</h2>
+    <p class="section-sub">Fill these in once. They're saved locally in your browser and applied to every link you generate.</p>
+
+    <div class="row">
+      <div>
+        <label>Property Management Company Name <span class="req">*</span></label>
+        <input type="text" id="company" placeholder="Your company name">
+      </div>
+      <div>
+        <label>Submission Email Address <span class="req">*</span></label>
+        <input type="email" id="email" placeholder="manager@yourcompany.com">
+        <div class="help">Where tenant proposals will be sent.</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>CC Email <span class="opt">(optional)</span></label>
+        <input type="email" id="cc" placeholder="assistant@yourcompany.com">
+      </div>
+      <div>
+        <label>Office Phone <span class="opt">(optional)</span></label>
+        <input type="tel" id="phone" placeholder="(843) 555-0000">
+      </div>
+    </div>
+
+    <div class="row full">
+      <div>
+        <label>Hosted Form URL <span class="req">*</span></label>
+        <input type="url" id="baseUrl" placeholder="https://yoursite.com/payment-arrangement.html">
+        <div class="help">The URL where the tenant form is hosted. Get this from your law firm or web administrator.</div>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button class="primary" id="saveConfigBtn">Save My Company Info</button>
+      <button id="clearConfigBtn">Clear Saved Info</button>
+    </div>
+  </section>
+
+  <!-- ===== SECTION II — Tenant & Property Information ===== -->
+  <section class="card">
+    <div class="section-num">Section II</div>
+    <h2>Tenant &amp; Property Information</h2>
+    <p class="section-sub">From your tenant ledger and lease file.</p>
+
+    <div class="row full">
+      <div>
+        <label>Tenant Name(s) <span class="req">*</span></label>
+        <input type="text" id="tenantNames" placeholder="Full legal name(s) of all tenants on the lease">
+        <div class="help">Will be locked on the tenant's form.</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Tenant Email <span class="opt">(optional, prefills for tenant)</span></label>
+        <input type="email" id="tenantEmail" placeholder="tenant@example.com">
+      </div>
+      <div>
+        <label>Tenant Phone <span class="opt">(optional)</span></label>
+        <input type="tel" id="tenantPhone" placeholder="(843) 555-1234">
+      </div>
+    </div>
+
+    <div class="row full">
+      <div>
+        <label>Property Address <span class="req">*</span></label>
+        <input type="text" id="property" placeholder="Street address, unit, city, state, ZIP">
+      </div>
+    </div>
+
+    <div class="row three">
+      <div>
+        <label>Lease Start <span class="req">*</span></label>
+        <input type="date" id="leaseStart">
+      </div>
+      <div>
+        <label>Lease End <span class="req">*</span></label>
+        <input type="date" id="leaseEnd">
+      </div>
+      <div>
+        <label>Monthly Rent <span class="req">*</span></label>
+        <input type="number" id="rent" placeholder="0.00" step="0.01" min="0">
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION III — Outstanding Balance ===== -->
+  <section class="card">
+    <div class="section-num">Section III</div>
+    <h2>Outstanding Balance</h2>
+    <p class="section-sub">The current verified amount the tenant owes.</p>
+
+    <div class="row">
+      <div>
+        <label>Total Outstanding Balance <span class="req">*</span></label>
+        <input type="number" id="balance" placeholder="0.00" step="0.01" min="0">
+      </div>
+      <div>
+        <label>As of Date <span class="req">*</span></label>
+        <input type="date" id="balanceDate">
+      </div>
+    </div>
+
+    <div style="margin-top: 4px;">
+      <label>Balance Includes (check all that apply):</label>
+      <div class="checks">
+        <label class="check"><input type="checkbox" name="includes" value="Past Due Rent"> Past Due Rent</label>
+        <label class="check"><input type="checkbox" name="includes" value="Late Fees"> Late Fees</label>
+        <label class="check"><input type="checkbox" name="includes" value="Court Costs / Legal Fees"> Court Costs / Legal Fees</label>
+        <label class="check"><input type="checkbox" name="includes" value="Other"> Other</label>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION IV — Generated Link ===== -->
+  <section class="card">
+    <div class="section-num">Section IV</div>
+    <h2>Generated Tenant Link</h2>
+    <p class="section-sub">Copy this link or the email template below. Send it to your tenant.</p>
+
+    <div class="output-block" id="linkOutput">
+      <span class="placeholder">Complete sections I, II, and III to generate the link…</span>
+    </div>
+
+    <div class="button-row">
+      <button class="primary" id="copyLinkBtn" disabled>Copy Link</button>
+      <button id="testLinkBtn" disabled>Open to Preview</button>
+      <button id="copyEmailBtn" disabled>Copy Email Template</button>
+      <button id="emailTenantBtn" disabled>Open in Email Client</button>
+    </div>
+
+    <div class="preview-section" id="emailPreview" style="display: none;">
+      <strong>Email template (to send to tenant):</strong>
+      <div class="body" id="emailPreviewBody"></div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p><strong>Reminder:</strong> Submitted proposals are not binding until you provide written approval. The tenant remains fully obligated under the existing lease until you confirm.</p>
+  </footer>
+</div>
+
+<script>
+  // ============ CONFIG (saved to localStorage) ============
+  const CONFIG_KEY = 'paymentForm_managerConfig';
+
+  const els = {
+    // Config
+    company:     document.getElementById('company'),
+    email:       document.getElementById('email'),
+    cc:          document.getElementById('cc'),
+    phone:       document.getElementById('phone'),
+    baseUrl:     document.getElementById('baseUrl'),
+    // Tenant data
+    tenantNames: document.getElementById('tenantNames'),
+    tenantEmail: document.getElementById('tenantEmail'),
+    tenantPhone: document.getElementById('tenantPhone'),
+    property:    document.getElementById('property'),
+    leaseStart:  document.getElementById('leaseStart'),
+    leaseEnd:    document.getElementById('leaseEnd'),
+    rent:        document.getElementById('rent'),
+    balance:     document.getElementById('balance'),
+    balanceDate: document.getElementById('balanceDate'),
+    // Output
+    linkOutput:       document.getElementById('linkOutput'),
+    copyLinkBtn:      document.getElementById('copyLinkBtn'),
+    testLinkBtn:      document.getElementById('testLinkBtn'),
+    copyEmailBtn:     document.getElementById('copyEmailBtn'),
+    emailTenantBtn:   document.getElementById('emailTenantBtn'),
+    emailPreview:     document.getElementById('emailPreview'),
+    emailPreviewBody: document.getElementById('emailPreviewBody'),
+    // Other
+    setupBanner:      document.getElementById('setupBanner'),
+    companyEyebrow:   document.getElementById('companyEyebrow'),
+    saveConfigBtn:    document.getElementById('saveConfigBtn'),
+    clearConfigBtn:   document.getElementById('clearConfigBtn'),
+  };
+
+  // ============ Load saved config ============
+  function loadConfig() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
+      if (saved.company)  els.company.value  = saved.company;
+      if (saved.email)    els.email.value    = saved.email;
+      if (saved.cc)       els.cc.value       = saved.cc;
+      if (saved.phone)    els.phone.value    = saved.phone;
+      if (saved.baseUrl)  els.baseUrl.value  = saved.baseUrl;
+      updateEyebrow();
+      updateSetupBanner();
+    } catch (e) { console.warn('Could not load saved config:', e); }
+  }
+
+  function saveConfig() {
+    const cfg = {
+      company:  els.company.value.trim(),
+      email:    els.email.value.trim(),
+      cc:       els.cc.value.trim(),
+      phone:    els.phone.value.trim(),
+      baseUrl:  els.baseUrl.value.trim(),
+    };
+    if (!cfg.company || !cfg.email || !cfg.baseUrl) {
+      alert('Please fill in Company Name, Email, and Hosted Form URL before saving.');
+      return;
+    }
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+    flashSuccess(els.saveConfigBtn, 'Saved!');
+    updateEyebrow();
+    updateSetupBanner();
+    regenerate();
+  }
+
+  function clearConfig() {
+    if (!confirm('Clear all saved company info? You will need to re-enter it.')) return;
+    localStorage.removeItem(CONFIG_KEY);
+    [els.company, els.email, els.cc, els.phone, els.baseUrl].forEach(el => el.value = '');
+    updateEyebrow();
+    updateSetupBanner();
+    regenerate();
+  }
+
+  function updateEyebrow() {
+    const company = els.company.value.trim();
+    els.companyEyebrow.textContent = company ? `${company} — Property Management Tool` : 'Property Management Tool';
+  }
+
+  function updateSetupBanner() {
+    const hasConfig = els.company.value && els.email.value && els.baseUrl.value;
+    els.setupBanner.style.display = hasConfig ? 'none' : 'block';
+  }
+
+  els.saveConfigBtn.addEventListener('click', saveConfig);
+  els.clearConfigBtn.addEventListener('click', clearConfig);
+
+  // ============ Build URL ============
+  function buildUrl() {
+    const base = els.baseUrl.value.trim();
+    if (!base) return null;
+
+    // Required for any link to make sense
+    if (!els.company.value.trim() || !els.email.value.trim()) return null;
+    if (!els.tenantNames.value.trim() || !els.property.value.trim()) return null;
+    if (!els.balance.value || !els.balanceDate.value) return null;
+
+    const params = new URLSearchParams();
+    // Company config
+    params.set('company', els.company.value.trim());
+    params.set('email',   els.email.value.trim());
+    if (els.cc.value.trim())    params.set('cc',    els.cc.value.trim());
+    if (els.phone.value.trim()) params.set('phone', els.phone.value.trim());
+
+    // Tenant + property (all locked on form)
+    params.set('tenant',      els.tenantNames.value.trim());
+    params.set('property',    els.property.value.trim());
+    if (els.leaseStart.value) params.set('leaseStart', els.leaseStart.value);
+    if (els.leaseEnd.value)   params.set('leaseEnd',   els.leaseEnd.value);
+    if (els.rent.value)       params.set('rent',       els.rent.value);
+
+    // Balance
+    params.set('balance',     els.balance.value);
+    params.set('balanceDate', els.balanceDate.value);
+
+    // Optional editable pre-fills
+    if (els.tenantEmail.value.trim()) params.set('tenantEmail', els.tenantEmail.value.trim());
+    if (els.tenantPhone.value.trim()) params.set('tenantPhone', els.tenantPhone.value.trim());
+
+    // Balance includes (checkboxes)
+    const includes = Array.from(document.querySelectorAll('input[name="includes"]:checked'))
+      .map(cb => cb.value);
+    if (includes.length) params.set('includes', includes.join(','));
+
+    return `${base}?${params.toString()}`;
+  }
+
+  // ============ Regenerate output ============
+  function regenerate() {
+    const url = buildUrl();
+
+    if (!url) {
+      els.linkOutput.innerHTML = '<span class="placeholder">Complete sections I, II, and III to generate the link…</span>';
+      els.copyLinkBtn.disabled = true;
+      els.testLinkBtn.disabled = true;
+      els.copyEmailBtn.disabled = true;
+      els.emailTenantBtn.disabled = true;
+      els.emailPreview.style.display = 'none';
+      return;
+    }
+
+    els.linkOutput.textContent = url;
+    els.copyLinkBtn.disabled = false;
+    els.testLinkBtn.disabled = false;
+    els.copyEmailBtn.disabled = false;
+    els.emailTenantBtn.disabled = !els.tenantEmail.value.trim();
+
+    // Build email template
+    const tenantFirstName = els.tenantNames.value.trim().split(' ')[0];
+    const balance = parseFloat(els.balance.value || 0).toFixed(2);
+    const company = els.company.value.trim();
+
+    const emailBody =
+`Hi ${tenantFirstName || '[Tenant Name]'},
+
+We received your request to set up a payment arrangement on the outstanding balance of $${balance} on your account at ${els.property.value.trim() || '[property address]'}.
+
+To submit your proposal, please use the link below. The property and balance information has been pre-filled. You'll only need to propose your payment dates and amounts, then sign electronically.
+
+Submit your proposal here:
+${url}
+
+A few important things to know:
+  • This is a proposal — it does NOT take effect until we approve it in writing.
+  • Continue paying your full monthly rent on time. Arrangement payments are in addition to rent, not a replacement.
+  • We'll review your proposal and respond within 3–5 business days.
+
+If you have questions, contact us directly.
+
+Thank you,
+${company}${els.phone.value.trim() ? '\n' + els.phone.value.trim() : ''}`;
+
+    els.emailPreviewBody.textContent = emailBody;
+    els.emailPreview.style.display = 'block';
+
+    // Store the email body for "Open in Email Client" button
+    els.emailTenantBtn.dataset.body = emailBody;
+    els.emailTenantBtn.dataset.subject = `Payment Arrangement Proposal — Action Needed`;
+  }
+
+  // ============ Button handlers ============
+  els.copyLinkBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(els.linkOutput.textContent).then(() => {
+      flashSuccess(els.copyLinkBtn, 'Copied!');
+    });
+  });
+
+  els.testLinkBtn.addEventListener('click', () => {
+    window.open(els.linkOutput.textContent, '_blank');
+  });
+
+  els.copyEmailBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(els.emailPreviewBody.textContent).then(() => {
+      flashSuccess(els.copyEmailBtn, 'Copied!');
+    });
+  });
+
+  els.emailTenantBtn.addEventListener('click', () => {
+    const subject = els.emailTenantBtn.dataset.subject;
+    const body = els.emailTenantBtn.dataset.body;
+    const to = els.tenantEmail.value.trim();
+    const cc = els.cc.value.trim();
+    const ccPart = cc ? `&cc=${encodeURIComponent(cc)}` : '';
+    window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}${ccPart}&body=${encodeURIComponent(body)}`;
+  });
+
+  function flashSuccess(btn, text) {
+    const original = btn.textContent;
+    btn.textContent = text;
+    btn.classList.add('success-flash');
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove('success-flash');
+    }, 1400);
+  }
+
+  // ============ Wire up live regeneration ============
+  const allInputs = document.querySelectorAll('input, textarea, select');
+  allInputs.forEach(el => {
+    el.addEventListener('input', () => {
+      updateEyebrow();
+      updateSetupBanner();
+      regenerate();
+    });
+    el.addEventListener('change', regenerate);
+  });
+
+  // ============ Default balance date to today ============
+  els.balanceDate.value = new Date().toISOString().slice(0, 10);
+
+  // ============ Init ============
+  loadConfig();
+</script>
+</body>
+</html>
